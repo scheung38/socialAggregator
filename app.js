@@ -12,16 +12,31 @@ var users = require('./routes/users');
 
 var app = express();
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var nconf = require('nconf');
+var config = require('./config.json');
+
+// First consider commmandline arguments and environment variables
+nconf.argv().env();
+
+// Then load configuration from a designated file
+nconf.file({file: 'config.json'});
+
+// Provide default values for settings not provided aboe
+nconf.defaults({
+    'http': {
+        'port': 1337
+    }
+});
 
 passport.use(new GoogleStrategy({
-    clientId:'',
-    clientSecret:'',
-    callbackURL: '',
+    clientID:config.clientID,
+    clientSecret: config.clientSecret,
+    callbackURL: config.callbackURL},
     function(req, accessToken, refreshToken, profile, done){
         done(null, profile);
     }
 
-}));
+));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
